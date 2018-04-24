@@ -5,5 +5,6 @@ return [
     ],
     'runLevels' => [
         'bmack/site-importer:siteimport:*' => \Helhum\Typo3Console\Core\Booting\RunLevel::LEVEL_MINIMAL,
-    ]
+    ],
+    'bootingSteps' => [],
 ];
