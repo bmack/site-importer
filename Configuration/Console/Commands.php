@@ -1,4 +1,5 @@
 <?php
+
 return [
     'controllers' => [
         \Bmack\SiteImporter\Command\SiteImportCommandController::class,

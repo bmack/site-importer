@@ -15,6 +15,7 @@ use Helhum\Typo3Console\Mvc\Controller\CommandController;
 use Symfony\Component\Yaml\Yaml;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Core\Database\DatabaseConnection;
 
 /**
  * Simple command to import records defined in a config yaml file into the database
@@ -29,10 +30,10 @@ class SiteImportCommandController extends CommandController
      */
     public function fromFileCommand($file)
     {
-        $contents = Yaml::parseFile($file);
+        $contents = Yaml::parse(file_get_contents($file));
         foreach ($contents as $type => $config) {
             $mode = $config['mode'] ?? 'append';
-            if (class_exists(ConnectionPool::class)) {
+            if (version_compare(TYPO3_branch, '8.7', '>=')) {
                 $conn = GeneralUtility::makeInstance(ConnectionPool::class)->getConnectionForTable($config['table']);
                 if ($mode === 'replace') {
                     $conn->truncate($config['table']);
@@ -43,15 +44,17 @@ class SiteImportCommandController extends CommandController
                     $this->outputLine('Added ' . json_encode($entry) . ' to database table ' . $config['table']);
                 }
             } else {
+                /** @var DatabaseConnection $databaseConnetion */
+                $conn = $GLOBALS['TYPO3_DB'];
+
                 if ($mode === 'replace') {
-                    $GLOBALS['TYPO3_DB']->exec_TRUNCATEquery($config['table']);
+                    $conn->exec_TRUNCATEquery($config['table']);
                     $this->outputLine('Emptied database table "' . $config['table'] . '"');
                 }
                 foreach ($config['entries'] as $entry) {
-                    $GLOBALS['TYPO3_DB']->exec_INSERTquery($config['table'], $entry);
+                    $conn->exec_INSERTquery($config['table'], $entry);
                     $this->outputLine('Added ' . json_encode($entry) . ' to database table ' . $config['table']);
                 }
-
             }
         }
     }
