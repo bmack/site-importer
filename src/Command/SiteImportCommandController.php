@@ -32,14 +32,26 @@ class SiteImportCommandController extends CommandController
         $contents = Yaml::parseFile($file);
         foreach ($contents as $type => $config) {
             $mode = $config['mode'] ?? 'append';
-            $conn = GeneralUtility::makeInstance(ConnectionPool::class)->getConnectionForTable($config['table']);
-            if ($mode === 'replace') {
-                $conn->truncate($config['table']);
-                $this->outputLine('Emptied database table "' . $config['table'] . '"');
-            }
-            foreach ($config['entries'] as $entry) {
-                $conn->insert($config['table'], $entry);
-                $this->outputLine('Added ' . json_encode($entry) . ' to database table ' . $config['table']);
+            if (class_exists(ConnectionPool::class)) {
+                $conn = GeneralUtility::makeInstance(ConnectionPool::class)->getConnectionForTable($config['table']);
+                if ($mode === 'replace') {
+                    $conn->truncate($config['table']);
+                    $this->outputLine('Emptied database table "' . $config['table'] . '"');
+                }
+                foreach ($config['entries'] as $entry) {
+                    $conn->insert($config['table'], $entry);
+                    $this->outputLine('Added ' . json_encode($entry) . ' to database table ' . $config['table']);
+                }
+            } else {
+                if ($mode === 'replace') {
+                    $GLOBALS['TYPO3_DB']->exec_TRUNCATEquery($config['table']);
+                    $this->outputLine('Emptied database table "' . $config['table'] . '"');
+                }
+                foreach ($config['entries'] as $entry) {
+                    $GLOBALS['TYPO3_DB']->exec_INSERTquery($config['table'], $entry);
+                    $this->outputLine('Added ' . json_encode($entry) . ' to database table ' . $config['table']);
+                }
+
             }
         }
     }
