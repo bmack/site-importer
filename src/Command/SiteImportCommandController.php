@@ -33,7 +33,7 @@ class SiteImportCommandController extends CommandController
     {
         $contents = Yaml::parse(file_get_contents($file));
         foreach ($contents as $type => $config) {
-            $mode = isset($config['mode']) ? $config['mode'] ? 'append';
+            $mode = isset($config['mode']) ? $config['mode'] : 'append';
             if (version_compare(TYPO3_branch, '8.7', '>=')) {
                 $conn = GeneralUtility::makeInstance(ConnectionPool::class)->getConnectionForTable($config['table']);
                 if ($mode === 'replace') {
