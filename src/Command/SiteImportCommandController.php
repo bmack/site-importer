@@ -32,6 +32,7 @@ class SiteImportCommandController extends CommandController
     public function fromFileCommand($file)
     {
         $contents = Yaml::parse(file_get_contents($file));
+        $contents = $this->loadImports($contents);
         foreach ($contents as $type => $config) {
             $mode = isset($config['mode']) ? $config['mode'] : 'append';
             if (version_compare(TYPO3_branch, '8.7', '>=')) {
@@ -61,5 +62,28 @@ class SiteImportCommandController extends CommandController
                 }
             }
         }
+    }
+
+    /**
+     * Load recursively import files declared in yml files
+     *
+     * imports:
+     *    - { resource: 'base.site-importer.yml' }
+     *
+     * @param array $contents
+     */
+    private function loadImports(array $contents): array
+    {
+        if (! empty($contents['imports'])) {
+            foreach ($contents['imports'] as $import) {
+                $importedContent = Yaml::parseFile($import['resource']);
+                if (! empty($importedContent) && is_array($importedContent)) {
+                    $importedContent = $this->loadImports($importedContent);
+                    $contents = array_merge($importedContent, $contents);
+                }
+            }
+            unset($contents['imports']);
+        }
+        return $contents;
     }
 }
