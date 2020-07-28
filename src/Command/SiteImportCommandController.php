@@ -42,8 +42,19 @@ class SiteImportCommandController extends CommandController
                     $this->outputLine('Emptied database table "' . $config['table'] . '"');
                 }
                 foreach ($config['entries'] as $entry) {
-                    $conn->insert($config['table'], $entry);
-                    $this->outputLine('Added ' . json_encode($entry) . ' to database table ' . $config['table']);
+                    if ($mode === 'update' && isset($entry['uid'])) {
+                        $identifiers = ['uid' => $entry['uid']];
+                        if ($conn->count('uid', $config['table'], $identifiers)) {
+                            $conn->update($config['table'], $entry, $identifiers);
+                            $this->outputLine('Updated (mode=update, entry has uid): ' . json_encode($entry) . ' to database table ' . $config['table']);
+                        } else {
+                            $conn->insert($config['table'], $entry);
+                            $this->outputLine('Added (mode=update, entry does not have uid): ' . json_encode($entry) . ' to database table ' . $config['table']);
+                        }
+                    } else {
+                        $conn->insert($config['table'], $entry);
+                        $this->outputLine('Added ' . json_encode($entry) . ' to database table ' . $config['table']);
+                    }
                 }
             } else {
                 if (!($GLOBALS['TYPO3_DB'] instanceof DatabaseConnection)) {
@@ -57,8 +68,19 @@ class SiteImportCommandController extends CommandController
                     $this->outputLine('Emptied database table "' . $config['table'] . '"');
                 }
                 foreach ($config['entries'] as $entry) {
-                    $conn->exec_INSERTquery($config['table'], $entry);
-                    $this->outputLine('Added ' . json_encode($entry) . ' to database table ' . $config['table']);
+                    if ($mode === 'update' && isset($entry['uid'])) {
+                        $condition = sprintf('uid = %d', $entry['uid']);
+                        if ($conn->exec_SELECTcountRows('uid', $config['table'], $condition)) {
+                            $conn->exec_UPDATEquery($config['table'], $condition, $entry);
+                            $this->outputLine('Updated (mode=update, entry has uid): ' . json_encode($entry) . ' to database table ' . $config['table']);
+                        } else {
+                            $conn->exec_INSERTquery($config['table'], $entry);
+                            $this->outputLine('Added (mode=update, entry does not have uid): ' . json_encode($entry) . ' to database table ' . $config['table']);
+                        }
+                    } else {
+                        $conn->exec_INSERTquery($config['table'], $entry);
+                        $this->outputLine('Added ' . json_encode($entry) . ' to database table ' . $config['table']);
+                    }
                 }
             }
         }
