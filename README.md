@@ -63,7 +63,17 @@ In this case, create a file `conf/site_dev.yaml` for the local setup. It looks l
 Other files for staging, production etc. can be created accordingly.
 
 The option `mode` describes whether to truncate the database table before the entries are added.
-but could also be set to `append`.
+but could also be set to `append` or `update`. If set to `append` the entries will be written as
+pure insert without regard whether the record already exists.
+
+If `mode` is set to `replace` the table is first truncated, then entries are inserted.
+
+If `mode` is set to `update` the following happens:
+
+* A check is made if the entry contains a `uid` property. If it does not, the entry is inserted as
+  a new record (like it would happen if `mode` was set to `append`).
+* If entry does contain a `uid` property, the script checks if the record exist in the table and
+  if it does, an SQL update is done to update the record. If it does not exist, it is inserted.
 
 The file accepts more than one table, thus, all language records could be added as well, however
 this could be done in a generic `sites.yaml` file which works for all environments.
