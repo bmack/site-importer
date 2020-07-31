@@ -41,7 +41,7 @@ class SiteImportCommandController extends CommandController
                     $conn->truncate($config['table']);
                     $this->outputLine('Emptied database table "' . $config['table'] . '"');
                 }
-                foreach ($config['entries'] as $entry) {
+                foreach ($config['entries'] ?? [] as $entry) {
                     if ($mode === 'update' && isset($entry['uid'])) {
                         $identifiers = ['uid' => $entry['uid']];
                         if ($conn->count('uid', $config['table'], $identifiers)) {
@@ -67,7 +67,7 @@ class SiteImportCommandController extends CommandController
                     $conn->exec_TRUNCATEquery($config['table']);
                     $this->outputLine('Emptied database table "' . $config['table'] . '"');
                 }
-                foreach ($config['entries'] as $entry) {
+                foreach ($config['entries'] ?? [] as $entry) {
                     if ($mode === 'update' && isset($entry['uid'])) {
                         $condition = sprintf('uid = %d', $entry['uid']);
                         if ($conn->exec_SELECTcountRows('uid', $config['table'], $condition)) {
