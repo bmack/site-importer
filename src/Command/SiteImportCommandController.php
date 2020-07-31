@@ -101,7 +101,7 @@ class SiteImportCommandController extends CommandController
                 $importedContent = Yaml::parseFile($import['resource']);
                 if (! empty($importedContent) && is_array($importedContent)) {
                     $importedContent = $this->loadImports($importedContent);
-                    $contents = array_merge($importedContent, $contents);
+                    $contents = array_merge($contents, $importedContent);
                 }
             }
             unset($contents['imports']);
