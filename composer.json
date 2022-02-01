@@ -15,9 +15,10 @@
 		}
 	},
 	"require": {
-		"php": ">=7.0 <7.5",
+		"php": ">=7.2 <7.5",
 		"symfony/yaml": "^2.7 || ^3.0 || ^4.0",
-		"typo3/cms-core": "^7.6 || ^8.7 || ^9.0",
-		"helhum/typo3-console": "^4.0 || ^5.0"
-	}
+		"typo3/cms-core": "^9.0 || ^10.0",
+		"helhum/typo3-console": "^5.0 || ^6.0",
+		"ext-json": "*"
+    }
 }
