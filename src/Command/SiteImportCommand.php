@@ -26,11 +26,6 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 class SiteImportCommand extends Command
 {
     /**
-     * @var int
-     */
-    const SUCCESS = 0;
-
-    /**
      * @return void
      */
     protected function configure()

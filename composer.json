@@ -2,7 +2,7 @@
 	"name": "bmack/site-importer",
 	"description": "Imports records from a Yaml file structure into the TYPO3 database",
 	"license": "GPL-2.0+",
-	"type": "typo3-console-command",
+	"type": "typo3-cms-extension",
 	"authors": [
 		{
 			"name": "Benni Mack",
@@ -15,10 +15,14 @@
 		}
 	},
 	"require": {
-		"php": "^7.2 || ^8.1",
-		"symfony/yaml": "^2.7 || ^3.0 || ^4.0 || ^5.0 || ^6.0",
-		"typo3/cms-core": "^9.0 || ^10.0 || ^11.0",
-		"helhum/typo3-console": "^5.0 || ^6.0 || ^7.0",
+		"php": "^8.1",
+		"symfony/yaml": "^6.0",
+		"typo3/cms-core": "^12",
 		"ext-json": "*"
-    }
+	},
+	"extra": {
+		"typo3/cms": {
+			"extension-key": "site_importer"
+		}
+	}
 }
