@@ -37,7 +37,7 @@ class SiteImportCommand extends Command
     /**
      * Imports database entries into the database, based on Yaml configuration
      */
-    public function execute(InputInterface $input, OutputInterface $output)
+    public function execute(InputInterface $input, OutputInterface $output): int
     {
         $file = $input->getArgument('file');
 
