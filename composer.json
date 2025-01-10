@@ -17,7 +17,7 @@
 	"require": {
 		"php": "^8.1",
 		"symfony/yaml": "^6 || ^7",
-		"typo3/cms-core": "^12",
+		"typo3/cms-core": "^12 || ^13",
 		"ext-json": "*"
 	},
 	"extra": {
