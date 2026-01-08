@@ -53,7 +53,15 @@ class SiteImportCommand extends Command
             foreach ($config['entries'] ?? [] as $entry) {
                 if ($mode === 'update' && isset($entry['uid'])) {
                     $identifiers = ['uid' => $entry['uid']];
-                    if ($conn->count('uid', $config['table'], $identifiers)) {
+                    $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable($config['table']);
+                    $queryBuilder->getRestrictions()->removeAll();
+                    $count = $queryBuilder
+                        ->count('uid')
+                        ->from($config['table'])
+                        ->where($queryBuilder->expr()->eq('uid', $queryBuilder->createNamedParameter($entry['uid'], \PDO::PARAM_INT)))
+                        ->executeQuery()
+                        ->fetchOne();
+                    if ($count) {
                         $conn->update($config['table'], $entry, $identifiers);
                         $output->writeln('Updated (mode=update, entry has uid): '.json_encode($entry).' to database table '.$config['table']);
                     } else {
